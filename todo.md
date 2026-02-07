@@ -56,5 +56,12 @@
 - [x] Botões grandes e acessíveis
 - [x] Experiência fluida e intuitiva
 
+## Melhorias Solicitadas
+- [x] Admin fazer login via WhatsApp (mesmo fluxo dos outros usuários)
+- [x] Gerenciamento de administradores (cadastrar, bloquear, desbloquear)
+- [x] Adicionar número do motorista e passageiro no histórico de corridas
+- [x] Novo menu para editar templates de mensagens WhatsApp com variáveis
+- [x] Redesign do painel admin com menu colapsável/oculto
+
 ## Bugs
 - [x] Fix: Google Maps JavaScript API carregada múltiplas vezes na página

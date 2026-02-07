@@ -427,10 +427,11 @@ export default function PassengerArea({ session, onLogout }: { session: Session;
                     <p className="text-sm truncate">{ride.destinationAddress}</p>
                   </div>
                 </div>
-                <div className="flex gap-4 text-xs text-muted-foreground">
+                <div className="flex gap-4 text-xs text-muted-foreground flex-wrap">
                   <span>{ride.distanceKm} km</span>
                   <span>{ride.durationMinutes} min</span>
                   {ride.driverInfo && <span>Motorista: {ride.driverInfo.name}</span>}
+                  {ride.driverInfo && <span>Tel: {ride.driverInfo.phone}</span>}
                 </div>
               </CardContent>
             </Card>

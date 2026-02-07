@@ -8,6 +8,8 @@ import {
   rides, InsertRide,
   notifications, InsertNotification,
   authSessions,
+  admins, InsertAdmin,
+  messageTemplates, InsertMessageTemplate,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -374,3 +376,76 @@ export async function getActiveNotifications(target: "passengers" | "drivers") {
     ))
     .orderBy(desc(notifications.createdAt));
 }
+
+
+// Admin functions
+export async function findAdminByPhone(phone: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(admins).where(eq(admins.phone, phone)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createAdmin(data: InsertAdmin) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.insert(admins).values(data);
+  return result;
+}
+
+export async function getAdminById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(admins).where(eq(admins.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function listAdmins(search?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  if (search) {
+    return db.select().from(admins)
+      .where(or(
+        like(admins.name, `%${search}%`),
+        like(admins.phone, `%${search}%`),
+        like(admins.email, `%${search}%`)
+      ))
+      .orderBy(desc(admins.createdAt));
+  }
+  return db.select().from(admins).orderBy(desc(admins.createdAt));
+}
+
+export async function updateAdmin(id: number, data: Partial<InsertAdmin>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(admins).set(data).where(eq(admins.id, id));
+}
+
+// Message template functions
+export async function listMessageTemplates() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(messageTemplates).orderBy(desc(messageTemplates.updatedAt));
+}
+
+export async function getMessageTemplate(key: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(messageTemplates).where(eq(messageTemplates.key, key)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateMessageTemplate(id: number, data: Partial<InsertMessageTemplate>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(messageTemplates).set(data).where(eq(messageTemplates.id, id));
+}
+
+export async function createMessageTemplate(data: InsertMessageTemplate) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.insert(messageTemplates).values(data);
+  return result;
+}
+
+

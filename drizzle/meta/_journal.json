@@ -15,6 +15,13 @@
       "when": 1770499579635,
       "tag": "0001_steep_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1770508336066,
+      "tag": "0002_productive_wallow",
+      "breakpoints": true
     }
   ]
 }
