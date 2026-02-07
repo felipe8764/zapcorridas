@@ -55,3 +55,6 @@
 - [x] Design elegante com cores modernas
 - [x] Botões grandes e acessíveis
 - [x] Experiência fluida e intuitiva
+
+## Bugs
+- [x] Fix: Google Maps JavaScript API carregada múltiplas vezes na página

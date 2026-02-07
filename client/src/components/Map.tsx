@@ -69,9 +69,9 @@
  *
  * -------------------------------
  * ✅ SUMMARY
- * - “map-attached” → AdvancedMarkerElement, DirectionsRenderer, Layers.
- * - “standalone” → Geocoder, DirectionsService, DistanceMatrixService, ElevationService.
- * - “data-only” → Place, Geometry utilities.
+ * - "map-attached" → AdvancedMarkerElement, DirectionsRenderer, Layers.
+ * - "standalone" → Geocoder, DirectionsService, DistanceMatrixService, ElevationService.
+ * - "data-only" → Place, Geometry utilities.
  */
 
 /// <reference types="@types/google.maps" />
@@ -83,6 +83,8 @@ import { cn } from "@/lib/utils";
 declare global {
   interface Window {
     google?: typeof google;
+    __mapsScriptLoading?: Promise<void>;
+    __mapsScriptLoaded?: boolean;
   }
 }
 
@@ -92,21 +94,37 @@ const FORGE_BASE_URL =
   "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
 
-function loadMapScript() {
-  return new Promise(resolve => {
+function loadMapScript(): Promise<void> {
+  // If already loaded, return immediately
+  if (window.__mapsScriptLoaded && window.google?.maps) {
+    return Promise.resolve();
+  }
+
+  // If currently loading, return the existing promise
+  if (window.__mapsScriptLoading) {
+    return window.__mapsScriptLoading;
+  }
+
+  // Create new loading promise
+  window.__mapsScriptLoading = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = `${MAPS_PROXY_URL}/maps/api/js?key=${API_KEY}&v=weekly&libraries=marker,places,geocoding,geometry`;
     script.async = true;
     script.crossOrigin = "anonymous";
     script.onload = () => {
-      resolve(null);
-      script.remove(); // Clean up immediately
+      window.__mapsScriptLoaded = true;
+      window.__mapsScriptLoading = undefined;
+      resolve();
     };
     script.onerror = () => {
       console.error("Failed to load Google Maps script");
+      window.__mapsScriptLoading = undefined;
+      reject(new Error("Failed to load Google Maps"));
     };
     document.head.appendChild(script);
   });
+
+  return window.__mapsScriptLoading;
 }
 
 interface MapViewProps {
