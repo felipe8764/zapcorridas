@@ -15,6 +15,11 @@ const whatsappAuthRouter = router({
     .input(z.object({ phone: z.string().min(10) }))
     .mutation(async ({ input }) => {
       const { phone } = input;
+      const admin = await db.findAdminByPhone(phone);
+      if (admin) {
+        if (admin.isBlocked) return { status: "blocked" as const, userType: "admin" as const };
+        return { status: "exists" as const, userType: "admin" as const };
+      }
       const driver = await db.findDriverByPhone(phone);
       if (driver) {
         if (driver.isBlocked) return { status: "blocked" as const, userType: "driver" as const };
@@ -43,23 +48,30 @@ const whatsappAuthRouter = router({
     .mutation(async ({ input, ctx }) => {
       const valid = await db.verifyCode(input.phone, input.code);
       if (!valid) throw new TRPCError({ code: "BAD_REQUEST", message: "Código inválido ou expirado" });
-      let userType: "passenger" | "driver" = "passenger";
+      let userType: "passenger" | "driver" | "admin" = "passenger";
       let userId: number;
-      const driver = await db.findDriverByPhone(input.phone);
-      if (driver) {
-        if (driver.isBlocked) throw new TRPCError({ code: "FORBIDDEN", message: "Conta bloqueada" });
-        if (new Date(driver.expiresAt) < new Date()) throw new TRPCError({ code: "FORBIDDEN", message: "Conta vencida" });
-        userType = "driver";
-        userId = driver.id;
+      const admin = await db.findAdminByPhone(input.phone);
+      if (admin) {
+        if (admin.isBlocked) throw new TRPCError({ code: "FORBIDDEN", message: "Conta bloqueada" });
+        userType = "admin";
+        userId = admin.id;
       } else {
-        let passenger = await db.findPassengerByPhone(input.phone);
-        if (!passenger) {
-          if (!input.name) throw new TRPCError({ code: "BAD_REQUEST", message: "Nome é obrigatório para novo cadastro" });
-          const result = await db.createPassenger({ phone: input.phone, name: input.name });
-          userId = result.id;
+        const driver = await db.findDriverByPhone(input.phone);
+        if (driver) {
+          if (driver.isBlocked) throw new TRPCError({ code: "FORBIDDEN", message: "Conta bloqueada" });
+          if (new Date(driver.expiresAt) < new Date()) throw new TRPCError({ code: "FORBIDDEN", message: "Conta vencida" });
+          userType = "driver";
+          userId = driver.id;
         } else {
-          if (passenger.isBlocked) throw new TRPCError({ code: "FORBIDDEN", message: "Conta bloqueada" });
-          userId = passenger.id;
+          let passenger = await db.findPassengerByPhone(input.phone);
+          if (!passenger) {
+            if (!input.name) throw new TRPCError({ code: "BAD_REQUEST", message: "Nome é obrigatório para novo cadastro" });
+            const result = await db.createPassenger({ phone: input.phone, name: input.name });
+            userId = result.id;
+          } else {
+            if (passenger.isBlocked) throw new TRPCError({ code: "FORBIDDEN", message: "Conta bloqueada" });
+            userId = passenger.id;
+          }
         }
       }
       const token = nanoid(64);
@@ -77,7 +89,11 @@ const whatsappAuthRouter = router({
     if (!token) return null;
     const session = await db.getAuthSession(token);
     if (!session) return null;
-    if (session.userType === "driver") {
+    if (session.userType === "admin") {
+      const admin = await db.getAdminById(session.userId);
+      if (!admin || admin.isBlocked) return null;
+      return { userType: "admin" as const, userId: session.userId, phone: session.phone, name: admin.name, admin };
+    } else if (session.userType === "driver") {
       const driver = await db.getDriverById(session.userId);
       if (!driver || driver.isBlocked || new Date(driver.expiresAt) < new Date()) return null;
       return { userType: "driver" as const, userId: session.userId, phone: session.phone, name: driver.name, driver };

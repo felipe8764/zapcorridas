@@ -1,0 +1,1 @@
+ALTER TABLE `auth_sessions` MODIFY COLUMN `userType` enum('passenger','driver','admin') NOT NULL;

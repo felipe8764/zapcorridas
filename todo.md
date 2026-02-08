@@ -65,3 +65,8 @@
 
 ## Bugs
 - [x] Fix: Google Maps JavaScript API carregada múltiplas vezes na página
+
+
+## Ajustes Finais
+- [x] Remover login Manus OAuth do painel administrativo (apenas WhatsApp)
+- [x] Adicionar 5568999086827 como administrador no banco de dados

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react";
 import Login from "./Login";
@@ -36,6 +36,14 @@ export default function Home() {
 
   if (!session) {
     return <Login onLogin={handleLogin} />;
+  }
+
+  if (session.userType === "admin") {
+    // Redirect to admin panel
+    if (typeof window !== "undefined") {
+      window.location.href = "/admin";
+    }
+    return null;
   }
 
   if (session.userType === "driver") {

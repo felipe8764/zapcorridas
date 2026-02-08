@@ -132,7 +132,7 @@ export type InsertNotification = typeof notifications.$inferInsert;
 export const authSessions = mysqlTable("auth_sessions", {
   id: int("id").autoincrement().primaryKey(),
   token: varchar("token", { length: 512 }).notNull().unique(),
-  userType: mysqlEnum("userType", ["passenger", "driver"]).notNull(),
+  userType: mysqlEnum("userType", ["passenger", "driver", "admin"]).notNull(),
   userId: int("userId").notNull(),
   phone: varchar("phone", { length: 20 }).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

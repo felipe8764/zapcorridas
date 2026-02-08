@@ -18,6 +18,8 @@ vi.mock("./zapi", () => ({
 
 // Mock db functions
 vi.mock("./db", () => ({
+  findAdminByPhone: vi.fn().mockResolvedValue(null),
+  getAdminById: vi.fn().mockResolvedValue(null),
   findPassengerByPhone: vi.fn().mockResolvedValue(null),
   findDriverByPhone: vi.fn().mockResolvedValue(null),
   createPassenger: vi.fn().mockResolvedValue({ id: 1 }),

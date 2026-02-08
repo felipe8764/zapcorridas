@@ -221,7 +221,7 @@ export async function verifyCode(phone: string, code: string) {
 
 // ==================== Auth Sessions ====================
 
-export async function createAuthSession(token: string, userType: "passenger" | "driver", userId: number, phone: string) {
+export async function createAuthSession(token: string, userType: "passenger" | "driver" | "admin", userId: number, phone: string) {
   const db = await getDb();
   if (!db) throw new Error("DB not available");
   await db.insert(authSessions).values({ token, userType, userId, phone });
