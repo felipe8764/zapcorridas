@@ -70,3 +70,19 @@
 ## Ajustes Finais
 - [x] Remover login Manus OAuth do painel administrativo (apenas WhatsApp)
 - [x] Adicionar 5568999086827 como administrador no banco de dados
+
+
+## Melhorias em Progresso
+- [x] Implementar menu completo de edição de templates de mensagens WhatsApp com variáveis dinâmicas
+  - [x] Mensagem: Verificação de código de login
+  - [x] Mensagem: Nova corrida disponível (grupo de motoristas)
+  - [x] Mensagem: Dados do passageiro para motorista que aceitou
+  - [x] Mensagem: Confirmação de aceitar corrida (passageiro)
+  - [x] Mensagem: Cancelamento por passageiro
+  - [x] Mensagem: Cancelamento por motorista
+  - [x] Mensagem: Corrida iniciada
+  - [x] Mensagem: Corrida finalizada
+
+## Bugs Reportados
+- [x] Menu de templates de mensagens WhatsApp não estava aparecendo no painel admin
+- [x] Números de telefone não aparecem no histórico de corridas (passageiro e motorista)

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import TemplatesManager from "@/components/TemplatesManager";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
@@ -74,6 +75,7 @@ export default function Admin() {
     { id: "drivers", label: "Motoristas", icon: Car },
     { id: "rides", label: "Corridas", icon: MapPin },
     { id: "notifications", label: "Notificações", icon: Bell },
+    { id: "templates", label: "Templates", icon: AlertCircle },
   ];
 
   return (
@@ -396,6 +398,13 @@ export default function Admin() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {tab === "templates" && (
+            <div className="px-4 pb-6">
+              <h2 className="text-lg font-semibold mb-4">Editar Templates de Mensagens WhatsApp</h2>
+              <TemplatesManager />
             </div>
           )}
         </div>

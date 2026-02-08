@@ -351,6 +351,16 @@ const adminRouter = router({
   deleteNotification: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => { await db.deleteNotification(input.id); return { success: true }; }),
+
+  listTemplates: protectedProcedure.query(async () => db.listMessageTemplates()),
+
+  updateTemplate: protectedProcedure
+    .input(z.object({ id: z.number(), template: z.string().optional(), isActive: z.boolean().optional() }))
+    .mutation(async ({ input }) => {
+      const { id, ...data } = input;
+      await db.updateMessageTemplate(id, data);
+      return { success: true };
+    }),
 });
 
 // ==================== Maps Router ====================
