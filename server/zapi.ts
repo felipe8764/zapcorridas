@@ -1,7 +1,10 @@
 /**
  * Z-API Integration Module
  * Handles all WhatsApp messaging through Z-API REST endpoints
+ * Uses message templates from database for customizable messages
  */
+
+import * as db from "./db";
 
 const ZAPI_INSTANCE_ID = process.env.ZAPI_INSTANCE_ID ?? "";
 const ZAPI_TOKEN = process.env.ZAPI_TOKEN ?? "";
@@ -14,6 +17,19 @@ const headers = {
   "Content-Type": "application/json",
   "Client-Token": ZAPI_CLIENT_TOKEN,
 };
+
+/**
+ * Replace variables in a template string
+ * Variables are in format {{variable_name}}
+ */
+function replaceVariables(template: string, variables: Record<string, string | number>): string {
+  let result = template;
+  for (const [key, value] of Object.entries(variables)) {
+    const regex = new RegExp(`{{${key}}}`, "g");
+    result = result.replace(regex, String(value));
+  }
+  return result;
+}
 
 /**
  * Send a text message via WhatsApp
@@ -68,8 +84,21 @@ export async function sendGroupMessage(message: string): Promise<boolean> {
  * Send verification code to a phone number
  */
 export async function sendVerificationCode(phone: string, code: string): Promise<boolean> {
-  const message = `🔐 *ZapCorridas*\n\nSeu código de verificação é: *${code}*\n\nEste código expira em 5 minutos.\nNão compartilhe com ninguém.`;
-  return sendTextMessage(phone, message);
+  try {
+    const template = await db.getMessageTemplate("verification_code");
+    let message = template?.template || `🔐 *ZapCorridas*\n\nSeu código de verificação é: *{{code}}*\n\nEste código expira em 5 minutos.\nNão compartilhe com ninguém.`;
+    
+    if (!template?.isActive) {
+      console.warn("[Z-API] Verification code template is disabled");
+      return false;
+    }
+
+    message = replaceVariables(message, { code });
+    return sendTextMessage(phone, message);
+  } catch (error) {
+    console.error("[Z-API] sendVerificationCode error:", error);
+    return false;
+  }
 }
 
 /**
@@ -84,16 +113,38 @@ export async function notifyNewRide(params: {
   durationMinutes: number;
   acceptUrl: string;
 }): Promise<boolean> {
-  const message =
-    `🚗 *NOVA CORRIDA DISPONÍVEL*\n\n` +
-    `👤 Passageiro: *${params.passengerName}*\n` +
-    `📊 Corridas realizadas: ${params.passengerTotalRides}\n\n` +
-    `📍 Origem: ${params.originAddress}\n` +
-    `🏁 Destino: ${params.destinationAddress}\n\n` +
-    `📏 Distância: ${params.distanceKm} km\n` +
-    `⏱️ Tempo estimado: ${params.durationMinutes} min\n\n` +
-    `👉 Aceitar corrida: ${params.acceptUrl}`;
-  return sendGroupMessage(message);
+  try {
+    const template = await db.getMessageTemplate("new_ride_group");
+    let message = template?.template || 
+      `🚗 *NOVA CORRIDA DISPONÍVEL*\n\n` +
+      `👤 Passageiro: *{{nome_passageiro}}*\n` +
+      `📊 Corridas realizadas: {{total_corridas}}\n\n` +
+      `📍 Origem: {{origem}}\n` +
+      `🏁 Destino: {{destino}}\n\n` +
+      `📏 Distância: {{distancia}} km\n` +
+      `⏱️ Tempo estimado: {{tempo}} min\n\n` +
+      `👉 Aceitar corrida: {{link_aceitar}}`;
+
+    if (!template?.isActive) {
+      console.warn("[Z-API] New ride template is disabled");
+      return false;
+    }
+
+    message = replaceVariables(message, {
+      nome_passageiro: params.passengerName,
+      total_corridas: params.passengerTotalRides,
+      origem: params.originAddress,
+      destino: params.destinationAddress,
+      distancia: params.distanceKm,
+      tempo: params.durationMinutes,
+      link_aceitar: params.acceptUrl,
+    });
+
+    return sendGroupMessage(message);
+  } catch (error) {
+    console.error("[Z-API] notifyNewRide error:", error);
+    return false;
+  }
 }
 
 /**
@@ -110,19 +161,39 @@ export async function notifyDriverAccepted(params: {
   originLat: number;
   originLng: number;
 }): Promise<boolean> {
-  const message =
-    `✅ *CORRIDA ACEITA!*\n\n` +
-    `👤 Passageiro: *${params.passengerName}*\n` +
-    `📱 Contato: ${params.passengerPhone}\n\n` +
-    `📍 Origem: ${params.originAddress}\n` +
-    `🏁 Destino: ${params.destinationAddress}\n\n` +
-    `📏 Distância: ${params.distanceKm} km\n` +
-    `⏱️ Tempo estimado: ${params.durationMinutes} min\n\n` +
-    `📍 Localização do passageiro:`;
+  try {
+    const template = await db.getMessageTemplate("driver_accepted_private");
+    let message = template?.template ||
+      `✅ *CORRIDA ACEITA!*\n\n` +
+      `👤 Passageiro: *{{nome_passageiro}}*\n` +
+      `📱 Contato: {{telefone_passageiro}}\n\n` +
+      `📍 Origem: {{origem}}\n` +
+      `🏁 Destino: {{destino}}\n\n` +
+      `📏 Distância: {{distancia}} km\n` +
+      `⏱️ Tempo estimado: {{tempo}} min\n\n` +
+      `📍 Localização do passageiro:`;
 
-  await sendTextMessage(params.driverPhone, message);
-  await sendLocation(params.driverPhone, params.originLat, params.originLng);
-  return true;
+    if (!template?.isActive) {
+      console.warn("[Z-API] Driver accepted template is disabled");
+      return false;
+    }
+
+    message = replaceVariables(message, {
+      nome_passageiro: params.passengerName,
+      telefone_passageiro: params.passengerPhone,
+      origem: params.originAddress,
+      destino: params.destinationAddress,
+      distancia: params.distanceKm,
+      tempo: params.durationMinutes,
+    });
+
+    await sendTextMessage(params.driverPhone, message);
+    await sendLocation(params.driverPhone, params.originLat, params.originLng);
+    return true;
+  } catch (error) {
+    console.error("[Z-API] notifyDriverAccepted error:", error);
+    return false;
+  }
 }
 
 /**
@@ -136,14 +207,34 @@ export async function notifyPassengerAccepted(params: {
   carColor: string;
   plate: string;
 }): Promise<boolean> {
-  const message =
-    `🎉 *CORRIDA ACEITA!*\n\n` +
-    `Seu motorista está a caminho!\n\n` +
-    `👤 Motorista: *${params.driverName}*\n` +
-    `📱 Contato: ${params.driverPhone}\n` +
-    `🚗 Veículo: ${params.carModel} - ${params.carColor}\n` +
-    `🔢 Placa: ${params.plate}`;
-  return sendTextMessage(params.passengerPhone, message);
+  try {
+    const template = await db.getMessageTemplate("passenger_accepted");
+    let message = template?.template ||
+      `🎉 *CORRIDA ACEITA!*\n\n` +
+      `Seu motorista está a caminho!\n\n` +
+      `👤 Motorista: *{{nome_motorista}}*\n` +
+      `📱 Contato: {{telefone_motorista}}\n` +
+      `🚗 Veículo: {{modelo_carro}} - {{cor_carro}}\n` +
+      `🔢 Placa: {{placa}}`;
+
+    if (!template?.isActive) {
+      console.warn("[Z-API] Passenger accepted template is disabled");
+      return false;
+    }
+
+    message = replaceVariables(message, {
+      nome_motorista: params.driverName,
+      telefone_motorista: params.driverPhone,
+      modelo_carro: params.carModel,
+      cor_carro: params.carColor,
+      placa: params.plate,
+    });
+
+    return sendTextMessage(params.passengerPhone, message);
+  } catch (error) {
+    console.error("[Z-API] notifyPassengerAccepted error:", error);
+    return false;
+  }
 }
 
 /**
@@ -152,28 +243,67 @@ export async function notifyPassengerAccepted(params: {
 export async function notifyCancellation(
   phone: string,
   cancelledBy: "passenger" | "driver",
-  needsNewRequest: boolean
+  isPassenger: boolean
 ): Promise<boolean> {
-  const who = cancelledBy === "passenger" ? "O passageiro" : "O motorista";
-  let message = `❌ *CORRIDA CANCELADA*\n\n${who} cancelou a corrida.`;
-  if (needsNewRequest) {
-    message += `\n\nVocê precisará solicitar uma nova corrida.`;
+  try {
+    const templateKey = cancelledBy === "passenger" ? "passenger_cancelled" : "driver_cancelled";
+    const template = await db.getMessageTemplate(templateKey);
+    
+    let message = "";
+    if (cancelledBy === "passenger") {
+      message = template?.template || `❌ *Corrida Cancelada*\n\nO passageiro cancelou a corrida.`;
+    } else {
+      message = template?.template || `❌ *Corrida Cancelada*\n\nO motorista cancelou a corrida. Procurando outro motorista...`;
+    }
+
+    if (!template?.isActive) {
+      console.warn(`[Z-API] Cancellation template (${templateKey}) is disabled`);
+      return false;
+    }
+
+    return sendTextMessage(phone, message);
+  } catch (error) {
+    console.error("[Z-API] notifyCancellation error:", error);
+    return false;
   }
-  return sendTextMessage(phone, message);
 }
 
 /**
- * Notify ride started
+ * Notify passenger that ride has started
  */
 export async function notifyRideStarted(passengerPhone: string): Promise<boolean> {
-  const message = `🚗 *CORRIDA INICIADA*\n\nSua corrida começou! Tenha uma boa viagem.`;
-  return sendTextMessage(passengerPhone, message);
+  try {
+    const template = await db.getMessageTemplate("ride_started");
+    let message = template?.template || `🚗 *Corrida Iniciada!*\n\nSeu motorista está a caminho do destino.`;
+
+    if (!template?.isActive) {
+      console.warn("[Z-API] Ride started template is disabled");
+      return false;
+    }
+
+    return sendTextMessage(passengerPhone, message);
+  } catch (error) {
+    console.error("[Z-API] notifyRideStarted error:", error);
+    return false;
+  }
 }
 
 /**
- * Notify ride completed
+ * Notify passenger that ride has completed
  */
 export async function notifyRideCompleted(passengerPhone: string): Promise<boolean> {
-  const message = `✅ *CORRIDA FINALIZADA*\n\nSua corrida foi concluída. Obrigado por usar o ZapCorridas!`;
-  return sendTextMessage(passengerPhone, message);
+  try {
+    const template = await db.getMessageTemplate("ride_completed");
+    let message = template?.template || `✅ *Corrida Finalizada!*\n\nObrigado por usar ZapCorridas! 🚗`;
+
+    if (!template?.isActive) {
+      console.warn("[Z-API] Ride completed template is disabled");
+      return false;
+    }
+
+    return sendTextMessage(passengerPhone, message);
+  } catch (error) {
+    console.error("[Z-API] notifyRideCompleted error:", error);
+    return false;
+  }
 }

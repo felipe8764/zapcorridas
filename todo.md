@@ -76,3 +76,7 @@
 
 ## Testes
 - [x] 17 testes unitários passando (zapi.test.ts, zapcorridas.test.ts, auth.logout.test.ts)
+
+
+## Bugs Atuais
+- [x] Menu Mensagens WhatsApp não está alterando/desabilitando as mensagens no sistema
