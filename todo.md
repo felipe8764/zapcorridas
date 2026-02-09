@@ -6,6 +6,7 @@
 - [x] Schema: tabela rides (passengerId, driverId, origin, destination, distance, duration, status, timestamps)
 - [x] Schema: tabela verification_codes (phone, code, expiresAt)
 - [x] Schema: tabela notifications (title, message, target, isActive)
+- [x] Schema: tabela message_templates (key, name, template, variables, isActive)
 - [x] Migrar schema para banco de dados
 
 ## Autenticação via WhatsApp
@@ -15,6 +16,7 @@
 - [x] Auto-cadastro de passageiros novos (solicitar nome)
 - [x] Bloqueio de motoristas com conta vencida
 - [x] Sessão permanente (não expira até logout)
+- [x] Admin fazer login via WhatsApp (mesmo fluxo dos outros usuários)
 
 ## Área do Passageiro
 - [x] Tela de solicitação de corrida com origem/destino
@@ -22,7 +24,7 @@
 - [x] GPS automático para localização atual
 - [x] Estimativa de distância e tempo
 - [x] Visualização de corrida ativa (status em tempo real)
-- [x] Histórico de corridas detalhado
+- [x] Histórico de corridas detalhado com números de telefone
 - [x] Cancelamento de corrida
 - [x] Exibição de notificações do admin
 
@@ -32,7 +34,7 @@
 - [x] Aceitar corrida e ficar indisponível
 - [x] Iniciar viagem / Finalizar viagem
 - [x] Cancelamento de corrida
-- [x] Histórico de corridas detalhado
+- [x] Histórico de corridas detalhado com números de telefone
 - [x] Exibição de notificações do admin
 
 ## Integração Z-API (WhatsApp)
@@ -47,42 +49,30 @@
 - [x] Dashboard com estatísticas (totais, gráficos)
 - [x] Gerenciamento de passageiros (listar, editar, bloquear, buscar)
 - [x] Gerenciamento de motoristas (cadastrar, editar, bloquear, buscar)
+- [x] Gerenciamento de administradores (cadastrar, bloquear, desbloquear)
 - [x] Histórico de corridas com filtros e detalhes
 - [x] Sistema de notificações (criar, ativar/desativar, segmentar)
+- [x] Menu de templates de mensagens WhatsApp com variáveis dinâmicas
+- [x] Redesign completo: responsivo mobile-first, menu colapsável, design profissional
+- [x] Remover login Manus OAuth (apenas WhatsApp)
 
 ## Design e UX
 - [x] Interface mobile-first responsiva
-- [x] Design elegante com cores modernas
+- [x] Design elegante com cores modernas (tema verde)
 - [x] Botões grandes e acessíveis
 - [x] Experiência fluida e intuitiva
+- [x] Painel admin com sidebar colapsável
+- [x] Navegação por abas/pills responsiva
 
-## Melhorias Solicitadas
-- [x] Admin fazer login via WhatsApp (mesmo fluxo dos outros usuários)
-- [x] Gerenciamento de administradores (cadastrar, bloquear, desbloquear)
-- [x] Adicionar número do motorista e passageiro no histórico de corridas
-- [x] Novo menu para editar templates de mensagens WhatsApp com variáveis
-- [x] Redesign do painel admin com menu colapsável/oculto
+## Bugs Corrigidos
+- [x] Google Maps JavaScript API carregada múltiplas vezes
+- [x] Menu de templates de mensagens não funciona
+- [x] Números de telefone não aparecem no histórico
+- [x] Painel admin não responsivo para celular
 
-## Bugs
-- [x] Fix: Google Maps JavaScript API carregada múltiplas vezes na página
+## Dados Iniciais
+- [x] 8 templates de mensagens WhatsApp criados no banco
+- [x] Admin 5568999086827 adicionado ao banco de dados
 
-
-## Ajustes Finais
-- [x] Remover login Manus OAuth do painel administrativo (apenas WhatsApp)
-- [x] Adicionar 5568999086827 como administrador no banco de dados
-
-
-## Melhorias em Progresso
-- [x] Implementar menu completo de edição de templates de mensagens WhatsApp com variáveis dinâmicas
-  - [x] Mensagem: Verificação de código de login
-  - [x] Mensagem: Nova corrida disponível (grupo de motoristas)
-  - [x] Mensagem: Dados do passageiro para motorista que aceitou
-  - [x] Mensagem: Confirmação de aceitar corrida (passageiro)
-  - [x] Mensagem: Cancelamento por passageiro
-  - [x] Mensagem: Cancelamento por motorista
-  - [x] Mensagem: Corrida iniciada
-  - [x] Mensagem: Corrida finalizada
-
-## Bugs Reportados
-- [x] Menu de templates de mensagens WhatsApp não estava aparecendo no painel admin
-- [x] Números de telefone não aparecem no histórico de corridas (passageiro e motorista)
+## Testes
+- [x] 17 testes unitários passando (zapi.test.ts, zapcorridas.test.ts, auth.logout.test.ts)

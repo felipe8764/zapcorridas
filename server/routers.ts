@@ -324,7 +324,7 @@ const adminRouter = router({
       return Promise.all(ridesList.map(async (ride) => {
         const passenger = await db.getPassengerById(ride.passengerId);
         const driver = ride.driverId ? await db.getDriverById(ride.driverId) : null;
-        return { ...ride, passengerName: passenger?.name ?? "Desconhecido", driverName: driver?.name ?? null };
+        return { ...ride, passengerName: passenger?.name ?? "Desconhecido", passengerPhone: passenger?.phone ?? null, driverName: driver?.name ?? null, driverPhone: driver?.phone ?? null };
       }));
     }),
 
