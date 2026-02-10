@@ -182,7 +182,7 @@ const passengerRouter = router({
       const ridesList = await db.getPassengerRideHistory(input.passengerId);
       return Promise.all(ridesList.map(async (ride) => {
         let driverInfo = null;
-        if (ride.driverId) { const driver = await db.getDriverById(ride.driverId); if (driver) driverInfo = { name: driver.name, carModel: driver.carModel, carColor: driver.carColor, plate: driver.plate }; }
+        if (ride.driverId) { const driver = await db.getDriverById(ride.driverId); if (driver) driverInfo = { name: driver.name, phone: driver.phone, carModel: driver.carModel, carColor: driver.carColor, plate: driver.plate }; }
         return { ...ride, driverInfo };
       }));
     }),
@@ -192,6 +192,15 @@ const passengerRouter = router({
 
 // ==================== Driver Router ====================
 const driverRouter = router({
+  getRideDetails: publicProcedure
+    .input(z.object({ rideId: z.number() }))
+    .query(async ({ input }) => {
+      const ride = await db.getRideById(input.rideId);
+      if (!ride) throw new TRPCError({ code: "NOT_FOUND", message: "Corrida não encontrada" });
+      const passenger = await db.getPassengerById(ride.passengerId);
+      return { ...ride, passengerName: passenger?.name || "Desconhecido", passengerPhone: passenger?.phone || "" };
+    }),
+
   acceptRide: publicProcedure
     .input(z.object({ rideId: z.number(), driverId: z.number() }))
     .mutation(async ({ input }) => {

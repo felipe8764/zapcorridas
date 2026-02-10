@@ -23,6 +23,15 @@ type Session = {
 
 type View = "request" | "active" | "history";
 
+function formatPhone(phone: string): string {
+  const cleaned = phone.replace(/\D/g, "");
+  const withoutCountry = cleaned.length > 11 ? cleaned.slice(-11) : cleaned;
+  if (withoutCountry.length === 11) {
+    return `(${withoutCountry.slice(0, 2)}) ${withoutCountry.slice(2, 7)}-${withoutCountry.slice(7)}`;
+  }
+  return phone;
+}
+
 export default function PassengerArea({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [view, setView] = useState<View>("request");
   const [originText, setOriginText] = useState("");
@@ -434,7 +443,7 @@ export default function PassengerArea({ session, onLogout }: { session: Session;
                   <span>{ride.distanceKm} km</span>
                   <span>{ride.durationMinutes} min</span>
                   {ride.driverInfo && <span>Motorista: {ride.driverInfo.name}</span>}
-                  {ride.driverInfo && <span>Tel: {ride.driverInfo.phone}</span>}
+                  {ride.driverInfo && <span>Tel: {formatPhone(ride.driverInfo.phone)}</span>}
                 </div>
               </CardContent>
             </Card>

@@ -94,3 +94,9 @@
 ## Bugs Críticos v4
 - [x] Funções de editar passageiros e motoristas não aparecem no painel admin
 - [x] Login: se cadastrar motorista com número já em passageiros, sempre vai para tela do motorista
+
+## Bugs v5
+- [ ] Formatar telefone sem código 55: (11) 94010-8878 em vez de 5511940108878
+- [ ] Mensagens mostram {{nome_motorista}} em vez do nome real
+- [ ] Calcular distância antes de aceitar corrida (localização atual do motorista)
+- [ ] Histórico do passageiro: "Tel:" não mostra o número do motorista

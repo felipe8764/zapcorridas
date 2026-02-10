@@ -20,6 +20,15 @@ type Session = {
 
 type View = "dashboard" | "history";
 
+function formatPhone(phone: string): string {
+  const cleaned = phone.replace(/\D/g, "");
+  const withoutCountry = cleaned.length > 11 ? cleaned.slice(-11) : cleaned;
+  if (withoutCountry.length === 11) {
+    return `(${withoutCountry.slice(0, 2)}) ${withoutCountry.slice(2, 7)}-${withoutCountry.slice(7)}`;
+  }
+  return phone;
+}
+
 export default function DriverArea({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [view, setView] = useState<View>("dashboard");
   const [loading, setLoading] = useState(false);
@@ -178,7 +187,7 @@ export default function DriverArea({ session, onLogout }: { session: Session; on
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{activeRide.passengerInfo.phone}</span>
+                      <span className="text-sm">{formatPhone(activeRide.passengerInfo.phone)}</span>
                     </div>
                   </div>
                 )}

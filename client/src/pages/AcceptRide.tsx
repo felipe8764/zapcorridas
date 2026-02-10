@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useRoute, useLocation } from "wouter";
-import { Car, Loader2, CheckCircle, AlertCircle, MapPin } from "lucide-react";
+import { Car, Loader2, CheckCircle, AlertCircle, MapPin, Route, Clock } from "lucide-react";
 
 export default function AcceptRide() {
   const [, params] = useRoute("/aceitar/:rideId");
@@ -14,9 +14,11 @@ export default function AcceptRide() {
 
   const rideId = params?.rideId ? parseInt(params.rideId) : 0;
   const sessionQuery = trpc.whatsappAuth.getSession.useQuery();
+  const rideDetailsQuery = trpc.driver.getRideDetails.useQuery({ rideId }, { enabled: rideId > 0 });
   const acceptRide = trpc.driver.acceptRide.useMutation();
 
   const session = sessionQuery.data;
+  const rideDetails = rideDetailsQuery.data;
 
   const handleAccept = async () => {
     if (!session || session.userType !== "driver") {
@@ -84,10 +86,42 @@ export default function AcceptRide() {
           <CardTitle className="text-xl">Aceitar Corrida #{rideId}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-center text-muted-foreground text-sm">
-            Deseja aceitar esta corrida? Você receberá os detalhes do passageiro e localização via WhatsApp.
-          </p>
-          <Button onClick={handleAccept} disabled={loading} className="w-full h-14 text-lg rounded-xl font-semibold">
+          {rideDetailsQuery.isLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="animate-spin" /></div>
+          ) : rideDetails ? (
+            <>
+              <div className="bg-primary/5 rounded-xl p-4 space-y-3">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-green-500 mt-1 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground">Origem</p>
+                    <p className="text-sm font-medium truncate">{rideDetails.originAddress}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-red-500 mt-1 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground">Destino</p>
+                    <p className="text-sm font-medium truncate">{rideDetails.destinationAddress}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 pt-2 border-t border-primary/10">
+                  <div className="flex items-center gap-2">
+                    <Route className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{rideDetails.distanceKm} km</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{rideDetails.durationMinutes} min</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-center text-muted-foreground text-sm">
+                Deseja aceitar esta corrida? Você receberá os detalhes do passageiro e localização via WhatsApp.
+              </p>
+            </>
+          ) : null}
+          <Button onClick={handleAccept} disabled={loading || rideDetailsQuery.isLoading} className="w-full h-14 text-lg rounded-xl font-semibold">
             {loading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle className="mr-2 w-5 h-5" />}
             Aceitar Corrida
           </Button>
