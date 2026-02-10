@@ -8,6 +8,7 @@ import { MapView } from "@/components/Map";
 import RatingModal from "@/components/RatingModal";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { formatPhone } from "@/lib/formatPhone";
 import {
   MapPin, Navigation, Clock, Route, Loader2, X, LogOut, History,
   Car, Phone, User, AlertCircle, CheckCircle, ArrowLeft, Crosshair, Bell
@@ -23,14 +24,7 @@ type Session = {
 
 type View = "request" | "active" | "history";
 
-function formatPhone(phone: string): string {
-  const cleaned = phone.replace(/\D/g, "");
-  const withoutCountry = cleaned.length > 11 ? cleaned.slice(-11) : cleaned;
-  if (withoutCountry.length === 11) {
-    return `(${withoutCountry.slice(0, 2)}) ${withoutCountry.slice(2, 7)}-${withoutCountry.slice(7)}`;
-  }
-  return phone;
-}
+// Usar formatPhone global
 
 export default function PassengerArea({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [view, setView] = useState<View>("request");

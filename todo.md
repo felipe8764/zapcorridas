@@ -100,3 +100,7 @@
 - [x] Mensagens mostram {{nome_motorista}} em vez do nome real (variáveis substituídas corretamente no backend)
 - [x] Calcular distância antes de aceitar corrida (localização atual do motorista)
 - [x] Histórico do passageiro: "Tel:" não mostra o número do motorista
+
+
+## Melhorias v6
+- [x] Aplicar formatação de telefone em TODOS os lugares do sistema (admin, histórico, motorista, passageiro, notificações)

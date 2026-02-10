@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { formatPhone } from "@/lib/formatPhone";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -330,7 +331,7 @@ export default function Admin() {
                           <p className="font-semibold text-gray-900 truncate">{p.name}</p>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Phone className="w-3 h-3" />
-                            <span>{p.phone}</span>
+                            <span>{formatPhone(p.phone)}</span>
                           </div>
                           <p className="text-xs text-gray-400">{p.totalRides} corridas</p>
                         </div>
@@ -428,7 +429,7 @@ export default function Admin() {
                           </div>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <Phone className="w-3 h-3" />
-                            <span>{d.phone}</span>
+                            <span>{formatPhone(d.phone)}</span>
                           </div>
                           <p className="text-xs text-gray-400">{d.carModel} {d.carColor} | {d.plate}</p>
                           <p className="text-xs text-gray-400">Vence: {new Date(d.expiresAt).toLocaleDateString("pt-BR")}</p>

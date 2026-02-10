@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { formatPhone as formatPhoneGlobal } from "@/lib/formatPhone";
 import {
   Car, LogOut, History, Loader2, MapPin, Clock, Route, Phone, User,
   Play, CheckCircle, X, ArrowLeft, Navigation, Bell, Shield
@@ -20,14 +21,7 @@ type Session = {
 
 type View = "dashboard" | "history";
 
-function formatPhone(phone: string): string {
-  const cleaned = phone.replace(/\D/g, "");
-  const withoutCountry = cleaned.length > 11 ? cleaned.slice(-11) : cleaned;
-  if (withoutCountry.length === 11) {
-    return `(${withoutCountry.slice(0, 2)}) ${withoutCountry.slice(2, 7)}-${withoutCountry.slice(7)}`;
-  }
-  return phone;
-}
+// Usar formatPhone global
 
 export default function DriverArea({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [view, setView] = useState<View>("dashboard");
@@ -187,7 +181,7 @@ export default function DriverArea({ session, onLogout }: { session: Session; on
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{formatPhone(activeRide.passengerInfo.phone)}</span>
+                      <span className="text-sm">{formatPhoneGlobal(activeRide.passengerInfo.phone)}</span>
                     </div>
                   </div>
                 )}
@@ -282,7 +276,7 @@ export default function DriverArea({ session, onLogout }: { session: Session; on
                   <span>{ride.distanceKm} km</span>
                   <span>{ride.durationMinutes} min</span>
                   {ride.passengerInfo && <span>Passageiro: {ride.passengerInfo.name}</span>}
-                  {ride.passengerInfo && <span>Tel: {formatPhone(ride.passengerInfo.phone)}</span>}
+                  {ride.passengerInfo && <span>Tel: {formatPhoneGlobal(ride.passengerInfo.phone)}</span>}
                 </div>
               </CardContent>
             </Card>

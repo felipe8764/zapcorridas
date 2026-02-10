@@ -1,22 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
+import { formatPhone } from "@/lib/formatPhone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useRoute, useLocation } from "wouter";
 import { Car, Loader2, CheckCircle, AlertCircle, MapPin, Route, Clock } from "lucide-react";
 
-// Função para formatar telefone sem código 55
-function formatPhone(phone: string): string {
-  if (!phone) return "";
-  const cleaned = phone.replace(/\D/g, "");
-  if (cleaned.startsWith("55")) {
-    const withoutCode = cleaned.substring(2);
-    return `(${withoutCode.substring(0, 2)}) ${withoutCode.substring(2, 7)}-${withoutCode.substring(7)}`;
-  }
-  return `(${cleaned.substring(0, 2)}) ${cleaned.substring(2, 7)}-${cleaned.substring(7)}`;
-}
+// Usar formatPhone global
 
 export default function AcceptRide() {
   const [, params] = useRoute("/aceitar/:rideId");
