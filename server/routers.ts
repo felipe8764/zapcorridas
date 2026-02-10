@@ -304,7 +304,7 @@ const adminRouter = router({
     }),
 
   updateDriver: protectedProcedure
-    .input(z.object({ id: z.number(), name: z.string().optional(), carModel: z.string().optional(), carColor: z.string().optional(), plate: z.string().optional(), expiresAt: z.string().optional(), isBlocked: z.boolean().optional() }))
+    .input(z.object({ id: z.number(), phone: z.string().optional(), name: z.string().optional(), carModel: z.string().optional(), carColor: z.string().optional(), plate: z.string().optional(), expiresAt: z.string().optional(), isBlocked: z.boolean().optional() }))
     .mutation(async ({ input }) => {
       const { id, expiresAt, ...rest } = input;
       const data: any = { ...rest };

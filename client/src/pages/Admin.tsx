@@ -405,12 +405,13 @@ export default function Admin() {
                               <DialogHeader><DialogTitle>Editar Motorista</DialogTitle></DialogHeader>
                               {editingDriver && (
                                 <div className="space-y-3">
+                                  <div><Label className="text-xs">Número</Label><Input value={editingDriver.phone} onChange={(e) => setEditingDriver({ ...editingDriver, phone: e.target.value })} /></div>
                                   <div><Label className="text-xs">Nome</Label><Input value={editingDriver.name} onChange={(e) => setEditingDriver({ ...editingDriver, name: e.target.value })} /></div>
                                   <div><Label className="text-xs">Modelo</Label><Input value={editingDriver.carModel} onChange={(e) => setEditingDriver({ ...editingDriver, carModel: e.target.value })} /></div>
                                   <div><Label className="text-xs">Cor</Label><Input value={editingDriver.carColor} onChange={(e) => setEditingDriver({ ...editingDriver, carColor: e.target.value })} /></div>
                                   <div><Label className="text-xs">Placa</Label><Input value={editingDriver.plate} onChange={(e) => setEditingDriver({ ...editingDriver, plate: e.target.value })} /></div>
                                   <div><Label className="text-xs">Vencimento</Label><Input type="date" value={editingDriver.expiresAt instanceof Date ? editingDriver.expiresAt.toISOString().split('T')[0] : typeof editingDriver.expiresAt === 'string' ? editingDriver.expiresAt.split('T')[0] : ''} onChange={(e) => setEditingDriver({ ...editingDriver, expiresAt: e.target.value })} /></div>
-                                  <Button onClick={() => { updateDriver.mutateAsync({ id: editingDriver.id, name: editingDriver.name, carModel: editingDriver.carModel, carColor: editingDriver.carColor, plate: editingDriver.plate, expiresAt: editingDriver.expiresAt }); setEditingDriver(null); }} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                                  <Button onClick={() => { updateDriver.mutateAsync({ id: editingDriver.id, phone: editingDriver.phone, name: editingDriver.name, carModel: editingDriver.carModel, carColor: editingDriver.carColor, plate: editingDriver.plate, expiresAt: editingDriver.expiresAt }); setEditingDriver(null); }} className="w-full bg-emerald-600 hover:bg-emerald-700">
                                     Salvar
                                   </Button>
                                 </div>
