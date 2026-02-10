@@ -70,6 +70,8 @@ export default function Admin() {
   // Form states
   const [newDriver, setNewDriver] = useState({ phone: "", name: "", carModel: "", carColor: "", plate: "", expiresAt: "" });
   const [driverDialogOpen, setDriverDialogOpen] = useState(false);
+  const [editingDriver, setEditingDriver] = useState<any>(null);
+  const [editingPassenger, setEditingPassenger] = useState<any>(null);
   const [notifDialog, setNotifDialog] = useState(false);
   const [newNotif, setNewNotif] = useState({ title: "", message: "", target: "all" as "all" | "passengers" | "drivers" });
 
@@ -293,14 +295,34 @@ export default function Admin() {
                           </div>
                           <p className="text-xs text-gray-400">{p.totalRides} corridas</p>
                         </div>
-                        <Button
-                          variant={p.isBlocked ? "destructive" : "outline"}
-                          size="sm"
-                          className="shrink-0 text-xs"
-                          onClick={() => updatePassenger.mutateAsync({ id: p.id, isBlocked: !p.isBlocked })}
-                        >
-                          {p.isBlocked ? "Desbloquear" : "Bloquear"}
-                        </Button>
+                        <div className="flex gap-2 shrink-0">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditingPassenger(p)}>
+                                <Edit2 className="w-3 h-3" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md mx-4">
+                              <DialogHeader><DialogTitle>Editar Passageiro</DialogTitle></DialogHeader>
+                              {editingPassenger && (
+                                <div className="space-y-3">
+                                  <div><Label className="text-xs">Nome</Label><Input value={editingPassenger.name} onChange={(e) => setEditingPassenger({ ...editingPassenger, name: e.target.value })} /></div>
+                                  <Button onClick={() => { updatePassenger.mutateAsync({ id: editingPassenger.id, name: editingPassenger.name }); setEditingPassenger(null); }} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                                    Salvar
+                                  </Button>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <Button
+                            variant={p.isBlocked ? "destructive" : "outline"}
+                            size="sm"
+                            className="shrink-0 text-xs"
+                            onClick={() => updatePassenger.mutateAsync({ id: p.id, isBlocked: !p.isBlocked })}
+                          >
+                            {p.isBlocked ? "Desbloquear" : "Bloquear"}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -372,14 +394,38 @@ export default function Admin() {
                           <p className="text-xs text-gray-400">{d.carModel} {d.carColor} | {d.plate}</p>
                           <p className="text-xs text-gray-400">Vence: {new Date(d.expiresAt).toLocaleDateString("pt-BR")}</p>
                         </div>
-                        <Button
-                          variant={d.isBlocked ? "destructive" : "outline"}
-                          size="sm"
-                          className="shrink-0 text-xs"
-                          onClick={() => updateDriver.mutateAsync({ id: d.id, isBlocked: !d.isBlocked })}
-                        >
-                          {d.isBlocked ? "Desbloquear" : "Bloquear"}
-                        </Button>
+                        <div className="flex gap-2 shrink-0">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditingDriver(d)}>
+                                <Edit2 className="w-3 h-3" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md mx-4">
+                              <DialogHeader><DialogTitle>Editar Motorista</DialogTitle></DialogHeader>
+                              {editingDriver && (
+                                <div className="space-y-3">
+                                  <div><Label className="text-xs">Nome</Label><Input value={editingDriver.name} onChange={(e) => setEditingDriver({ ...editingDriver, name: e.target.value })} /></div>
+                                  <div><Label className="text-xs">Modelo</Label><Input value={editingDriver.carModel} onChange={(e) => setEditingDriver({ ...editingDriver, carModel: e.target.value })} /></div>
+                                  <div><Label className="text-xs">Cor</Label><Input value={editingDriver.carColor} onChange={(e) => setEditingDriver({ ...editingDriver, carColor: e.target.value })} /></div>
+                                  <div><Label className="text-xs">Placa</Label><Input value={editingDriver.plate} onChange={(e) => setEditingDriver({ ...editingDriver, plate: e.target.value })} /></div>
+                                  <div><Label className="text-xs">Vencimento</Label><Input type="date" value={editingDriver.expiresAt?.split('T')[0]} onChange={(e) => setEditingDriver({ ...editingDriver, expiresAt: e.target.value })} /></div>
+                                  <Button onClick={() => { updateDriver.mutateAsync({ id: editingDriver.id, name: editingDriver.name, carModel: editingDriver.carModel, carColor: editingDriver.carColor, plate: editingDriver.plate, expiresAt: editingDriver.expiresAt }); setEditingDriver(null); }} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                                    Salvar
+                                  </Button>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <Button
+                            variant={d.isBlocked ? "destructive" : "outline"}
+                            size="sm"
+                            className="shrink-0 text-xs"
+                            onClick={() => updateDriver.mutateAsync({ id: d.id, isBlocked: !d.isBlocked })}
+                          >
+                            {d.isBlocked ? "Desbloquear" : "Bloquear"}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

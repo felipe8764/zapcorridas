@@ -89,3 +89,8 @@
 - [x] Exibir histórico de avaliações no perfil do motorista
 - [x] Calcular média de avaliações do motorista
 - [x] Mostrar avaliações no painel admin
+
+
+## Bugs Críticos v4
+- [x] Funções de editar passageiros e motoristas não aparecem no painel admin
+- [x] Login: se cadastrar motorista com número já em passageiros, sempre vai para tela do motorista
