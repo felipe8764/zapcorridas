@@ -100,6 +100,45 @@ export default function Admin() {
     await updateTemplate.mutateAsync({ id, template: editingTemplateContent });
   };
 
+  const handleEditDriver = (driver: any) => {
+    setEditingDriver({ ...driver });
+  };
+
+  const handleSaveDriver = async () => {
+    if (!editingDriver) return;
+    try {
+      await updateDriver.mutateAsync({
+        id: editingDriver.id,
+        phone: editingDriver.phone,
+        name: editingDriver.name,
+        carModel: editingDriver.carModel,
+        carColor: editingDriver.carColor,
+        plate: editingDriver.plate,
+        expiresAt: editingDriver.expiresAt,
+      });
+      setEditingDriver(null);
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao salvar motorista");
+    }
+  };
+
+  const handleEditPassenger = (passenger: any) => {
+    setEditingPassenger({ ...passenger });
+  };
+
+  const handleSavePassenger = async () => {
+    if (!editingPassenger) return;
+    try {
+      await updatePassenger.mutateAsync({
+        id: editingPassenger.id,
+        name: editingPassenger.name,
+      });
+      setEditingPassenger(null);
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao salvar passageiro");
+    }
+  };
+
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "passengers", label: "Passageiros", icon: Users },
@@ -397,7 +436,7 @@ export default function Admin() {
                         <div className="flex gap-2 shrink-0">
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditingDriver(d)}>
+                              <Button size="sm" variant="outline" className="text-xs" onClick={() => handleEditDriver(d)}>
                                 <Edit2 className="w-3 h-3" />
                               </Button>
                             </DialogTrigger>
@@ -411,7 +450,7 @@ export default function Admin() {
                                   <div><Label className="text-xs">Cor</Label><Input value={editingDriver.carColor} onChange={(e) => setEditingDriver({ ...editingDriver, carColor: e.target.value })} /></div>
                                   <div><Label className="text-xs">Placa</Label><Input value={editingDriver.plate} onChange={(e) => setEditingDriver({ ...editingDriver, plate: e.target.value })} /></div>
                                   <div><Label className="text-xs">Vencimento</Label><Input type="date" value={editingDriver.expiresAt instanceof Date ? editingDriver.expiresAt.toISOString().split('T')[0] : typeof editingDriver.expiresAt === 'string' ? editingDriver.expiresAt.split('T')[0] : ''} onChange={(e) => setEditingDriver({ ...editingDriver, expiresAt: e.target.value })} /></div>
-                                  <Button onClick={() => { updateDriver.mutateAsync({ id: editingDriver.id, phone: editingDriver.phone, name: editingDriver.name, carModel: editingDriver.carModel, carColor: editingDriver.carColor, plate: editingDriver.plate, expiresAt: editingDriver.expiresAt }); setEditingDriver(null); }} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                                  <Button onClick={handleSaveDriver} className="w-full bg-emerald-600 hover:bg-emerald-700">
                                     Salvar
                                   </Button>
                                 </div>
