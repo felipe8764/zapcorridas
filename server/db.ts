@@ -10,6 +10,7 @@ import {
   authSessions,
   admins, InsertAdmin,
   messageTemplates, InsertMessageTemplate,
+  ratings, InsertRating,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -449,3 +450,72 @@ export async function createMessageTemplate(data: InsertMessageTemplate) {
 }
 
 
+
+// Rating functions
+export async function createRating(data: InsertRating) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.insert(ratings).values(data);
+  return result;
+}
+
+export async function getRatingById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(ratings).where(eq(ratings.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getRatingByRideId(rideId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(ratings).where(eq(ratings.rideId, rideId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getDriverRatings(driverId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(ratings).where(eq(ratings.driverId, driverId)).orderBy(desc(ratings.createdAt));
+}
+
+export async function getDriverAverageRating(driverId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ avg: count() }).from(ratings).where(eq(ratings.driverId, driverId));
+  if (!result.length) return 0;
+  
+  const allRatings = await getDriverRatings(driverId);
+  if (!allRatings.length) return 0;
+  
+  const sum = allRatings.reduce((acc, r) => acc + r.stars, 0);
+  return Math.round((sum / allRatings.length) * 10) / 10; // Round to 1 decimal place
+}
+
+export async function updateRating(id: number, data: Partial<InsertRating>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(ratings).set(data).where(eq(ratings.id, id));
+}
+
+export async function deleteRating(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(ratings).where(eq(ratings.id, id));
+}
+
+export async function listAllRatings(filters?: { driverId?: number; passengerId?: number }) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions = [];
+  
+  if (filters?.driverId) conditions.push(eq(ratings.driverId, filters.driverId));
+  if (filters?.passengerId) conditions.push(eq(ratings.passengerId, filters.passengerId));
+  
+  if (conditions.length > 0) {
+    return db.select().from(ratings).where(and(...conditions)).orderBy(desc(ratings.createdAt));
+  }
+  
+  return db.select().from(ratings).orderBy(desc(ratings.createdAt));
+}

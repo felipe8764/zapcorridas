@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapView } from "@/components/Map";
+import RatingModal from "@/components/RatingModal";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
@@ -31,6 +32,8 @@ export default function PassengerArea({ session, onLogout }: { session: Session;
   const [routeInfo, setRouteInfo] = useState<{ distanceText: string; distanceKm: string; durationText: string; durationMinutes: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [completedRide, setCompletedRide] = useState<any>(null);
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const originAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);

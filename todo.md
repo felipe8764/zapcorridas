@@ -80,3 +80,12 @@
 
 ## Bugs Atuais
 - [x] Menu Mensagens WhatsApp não está alterando/desabilitando as mensagens no sistema
+
+
+## Sistema de Avaliação
+- [x] Criar tabela ratings no banco de dados (rideId, driverId, passengerId, stars, comment, createdAt)
+- [x] Adicionar rotas tRPC para criar/listar/editar avaliações
+- [x] Tela de avaliação no frontend (após corrida finalizada)
+- [x] Exibir histórico de avaliações no perfil do motorista
+- [x] Calcular média de avaliações do motorista
+- [x] Mostrar avaliações no painel admin

@@ -377,6 +377,43 @@ const mapsRouter = router({
     }),
 });
 
+// ==================== Ratings Router ====================
+const ratingsRouter = router({
+  createRating: protectedProcedure
+    .input(z.object({ rideId: z.number(), driverId: z.number(), passengerId: z.number(), stars: z.number().min(1).max(5), comment: z.string().optional() }))
+    .mutation(async ({ input }) => {
+      const existing = await db.getRatingByRideId(input.rideId);
+      if (existing) throw new TRPCError({ code: "BAD_REQUEST", message: "Esta corrida já foi avaliada" });
+      await db.createRating(input);
+      return { success: true };
+    }),
+  getRatingByRideId: publicProcedure
+    .input(z.object({ rideId: z.number() }))
+    .query(async ({ input }) => db.getRatingByRideId(input.rideId)),
+  getDriverRatings: publicProcedure
+    .input(z.object({ driverId: z.number() }))
+    .query(async ({ input }) => db.getDriverRatings(input.driverId)),
+  getDriverAverageRating: publicProcedure
+    .input(z.object({ driverId: z.number() }))
+    .query(async ({ input }) => db.getDriverAverageRating(input.driverId)),
+  listAllRatings: protectedProcedure
+    .input(z.object({ driverId: z.number().optional(), passengerId: z.number().optional() }).optional())
+    .query(async ({ input }) => db.listAllRatings(input)),
+  updateRating: protectedProcedure
+    .input(z.object({ id: z.number(), stars: z.number().min(1).max(5).optional(), comment: z.string().optional() }))
+    .mutation(async ({ input }) => {
+      const { id, ...data } = input;
+      await db.updateRating(id, data);
+      return { success: true };
+    }),
+  deleteRating: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      await db.deleteRating(input.id);
+      return { success: true };
+    }),
+});
+
 // ==================== Main Router ====================
 export const appRouter = router({
   system: systemRouter,
@@ -392,6 +429,7 @@ export const appRouter = router({
   passenger: passengerRouter,
   driver: driverRouter,
   admin: adminRouter,
+  ratings: ratingsRouter,
   maps: mapsRouter,
 });
 
