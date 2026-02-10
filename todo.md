@@ -96,7 +96,7 @@
 - [x] Login: se cadastrar motorista com número já em passageiros, sempre vai para tela do motorista
 
 ## Bugs v5
-- [ ] Formatar telefone sem código 55: (11) 94010-8878 em vez de 5511940108878
-- [ ] Mensagens mostram {{nome_motorista}} em vez do nome real
-- [ ] Calcular distância antes de aceitar corrida (localização atual do motorista)
-- [ ] Histórico do passageiro: "Tel:" não mostra o número do motorista
+- [x] Formatar telefone sem código 55: (11) 94010-8878 em vez de 5511940108878
+- [x] Mensagens mostram {{nome_motorista}} em vez do nome real (variáveis substituídas corretamente no backend)
+- [x] Calcular distância antes de aceitar corrida (localização atual do motorista)
+- [x] Histórico do passageiro: "Tel:" não mostra o número do motorista
