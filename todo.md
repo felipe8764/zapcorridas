@@ -104,3 +104,7 @@
 
 ## Melhorias v6
 - [x] Aplicar formatação de telefone em TODOS os lugares do sistema (admin, histórico, motorista, passageiro, notificações)
+
+
+## Bugs v7
+- [x] Botão de sair do painel admin não funciona

@@ -55,6 +55,7 @@ export default function Admin() {
   const templatesQuery = trpc.admin.listTemplates.useQuery();
 
   // Mutations
+  const logout = trpc.auth.logout.useMutation();
   const createDriver = trpc.admin.createDriver.useMutation({ onSuccess: () => { driversQuery.refetch(); toast.success("Motorista cadastrado!"); } });
   const updateDriver = trpc.admin.updateDriver.useMutation({ onSuccess: () => { driversQuery.refetch(); toast.success("Motorista atualizado!"); } });
   const updatePassenger = trpc.admin.updatePassenger.useMutation({ onSuccess: () => { passengersQuery.refetch(); toast.success("Passageiro atualizado!"); } });
@@ -232,7 +233,10 @@ export default function Admin() {
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
               <button
-                onClick={() => { window.location.href = "/"; }}
+                onClick={async () => {
+                  await logout.mutateAsync();
+                  window.location.href = "/";
+                }}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all"
               >
                 <LogOut className="w-5 h-5" />
