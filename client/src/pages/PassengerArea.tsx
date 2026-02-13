@@ -376,7 +376,7 @@ export default function PassengerArea({ session, onLogout }: { session: Session;
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{activeRide.driverInfo.phone}</span>
+                      <span className="text-sm">{formatPhone(activeRide.driverInfo.phone)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Car className="w-4 h-4 text-muted-foreground" />
