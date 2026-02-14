@@ -1,9 +1,0 @@
-{
-  "query": "INSERT INTO admins (phone, name, isBlocked, createdAt) VALUES ('5568999086827', 'Administrador', false, NOW());",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user WcMatWnnBSSQHyT.root --database WCBBuR2XW9d64A5ZEq3a3F --execute INSERT INTO admins (phone, name, isBlocked, createdAt) VALUES ('5568999086827', 'Administrador', false, NOW());",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 116
-}
